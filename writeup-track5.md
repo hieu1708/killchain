@@ -104,7 +104,7 @@ Truy cập `/app/boss/gate`, thu được payload dạng hex:
 536c57492872615d7d6664573d0b2f526c510403286206026201772936065805
 ```
 
-### Bước 3: Khôi phục khóa XOR từ self-test
+### Bước 3: Tìm KEY
 
 Trong `bundle` còn sót lại dữ liệu kiểm thử riêng cho tầng XOR:
 
@@ -115,54 +115,43 @@ ct = 747b7976486376607c651c37212d236c706b601e2a7e1a07000307
 
 ![Cặp bản rõ và bản mã trong self-test](writeup-track5-images/bai3-self-test.png)
 
-Trong đó, `pt` là bản rõ và `ct` là bản mã được biểu diễn dưới dạng hex. Với phép XOR:
-
-```text
-pt XOR keystream = ct
-pt XOR ct = keystream
-```
-
-Chuyển `ct` từ hex thành byte rồi XOR với các byte ASCII của `pt`, thu được chuỗi:
-
-```text
-5843e575011ddae85843e575011
-```
+Ta thấy pt XOR KEY = ct
+-> KEY = pt XOR ct (tính chất tự nghịch đảo của xor)
 
 ![Khôi phục khóa bằng XOR](writeup-track5-images/bai3-khoi-phuc-khoa.png)
 
-Chuỗi này cho thấy phần đầu được lặp lại. Lấy khóa ứng viên gồm 16 ký tự:
-
 ```text
-5843e575011ddae8
+Đem pt XOR ct thu được 5843e575011ddae85843e575011
 ```
 
-### Bước 4: XOR payload với khóa lặp
-
-Chuyển payload từ hex thành byte rồi XOR từng byte với khóa, lặp lại khóa khi hết 16 byte:
+Đoạn sau bị lặp rồi nên ta lấy phần đầu thôi
 
 ```text
-output[i] = payload[i] XOR key[i mod 16]
+KEY: 5843e575011ddae8
 ```
 
-Kết quả là chuỗi Base64:
+### Bước 4: XOR payload với KEY
+
+
+![XOR payload với khóa lặp](writeup-track5-images/bai3-xor-payload.png)
+
+Kết quả là chuỗi Base64 đã bị mã hóa như để nói:
 
 ```text
 fTczMGVhMWU3YjJjYi00MW17R0FMRg==
 ```
 
-![XOR payload với khóa lặp](writeup-track5-images/bai3-xor-payload.png)
 
-### Bước 5: Giải mã Base64 và đảo ngược byte
+Đem giải mã Base64 thu được:
 
-Giải mã Base64 thu được:
+
+![Kết quả giải mã Base64](writeup-track5-images/bai3-base64.png)
 
 ```text
 }730ea1e7b2cb-41m{GALF
 ```
 
-![Kết quả giải mã Base64](writeup-track5-images/bai3-base64.png)
-
-Đảo ngược thứ tự byte để thu được flag:
+Đảo ngược thứ tự:
 
 ```text
 FLAG{m14-bc2b7e1ae037}
