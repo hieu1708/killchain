@@ -106,8 +106,6 @@ Truy cập `/app/boss/gate`, thu được payload dạng hex:
 
 ### Bước 3: Tìm KEY
 
-Trong `bundle` còn sót lại dữ liệu kiểm thử riêng cho tầng XOR:
-
 ```text
 pt = ACME-VAULT-SELFTEST-OK-2026
 ct = 747b7976486376607c651c37212d236c706b601e2a7e1a07000307
@@ -135,7 +133,7 @@ KEY: 5843e575011ddae8
 
 ![XOR payload với khóa lặp](writeup-track5-images/bai3-xor-payload.png)
 
-Kết quả là chuỗi Base64 đã bị mã hóa như để nói:
+Kết quả là chuỗi Base64 đã bị mã hóa:
 
 ```text
 fTczMGVhMWU3YjJjYi00MW17R0FMRg==
