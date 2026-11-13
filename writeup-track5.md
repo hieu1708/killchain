@@ -1,6 +1,5 @@
 # Writeup Track 5 — Bài 2 và Bài 3
 
-Tài liệu được biên soạn lại từ nội dung và ảnh minh họa trong `writeup.odt`.
 
 ## Bài 2 — BOSS: Leo thang đặc quyền
 
@@ -47,15 +46,7 @@ Tài liệu gốc ghi nhận lệnh sau và ảnh chụp kết quả trả về 
 sudo python3 cat /root/flag
 ```
 
-**Lưu ý về cú pháp:** Với Python thông thường, lệnh trên yêu cầu Python chạy một file chương trình tên `cat`, truyền `/root/flag` làm đối số; nó không tự gọi tiện ích `cat` của shell. Ảnh trong tài liệu chỉ xác nhận kết quả của môi trường bài tập, chưa đủ để xác định cách môi trường đó xử lý lệnh.
-
-Để diễn đạt đúng thao tác đọc file bằng Python trong điều kiện quyền sudo như trên, có thể dùng:
-
-```bash
-sudo /usr/bin/python3 -c 'print(open("/root/flag").read())'
-```
-
-Lệnh minh họa này chưa được chạy kiểm chứng trên hệ thống của bài tập.
+**Lưu ý:** thực ra câu lệnh trên chưa đúng cú pháp nhưng lab vẫn xử lý lệnh
 
 Flag hiển thị trong ảnh:
 
@@ -69,19 +60,19 @@ FLAG{m10-926822c17962}
 
 Lỗi nằm ở việc cấp quyền sudo quá rộng cho tài khoản chạy ứng dụng web: cho phép chạy một trình thông dịch đa dụng bằng quyền `root` mà không cần mật khẩu.
 
-## Bài 3 — TRÙM CUỐI: Két sắt APT
-
-### Mục tiêu
-
-Phân tích cách ứng dụng AcmeVault tải và xử lý dữ liệu, khôi phục khóa XOR rồi giải mã payload để lấy flag.
+## Bài 3 
 
 ![Đề bài 3 — Két sắt APT](writeup-track5-images/bai3-de-bai.png)
 
 ### Bước 1: Kiểm tra mã nguồn phía trình duyệt
 
-Mở trang `/app/boss`. Giao diện hiển thị két AcmeVault ở trạng thái đang tải. Mở Developer Tools bằng `F12`, vào tab **Sources** và xem mã JavaScript trong `bundle`.
+Mở trang `/app/boss`. Giao diện hiển thị két AcmeVault ở trạng thái đang tải.
 
 ![Giao diện AcmeVault](writeup-track5-images/bai3-giao-dien.png)
+
+Mở Developer Tools bằng `F12`, vào tab **Sources** và xem mã JavaScript trong `bundle`.
+
+![Mã JavaScript trong bundle](writeup-track5-images/bai3-bundle.png)
 
 Trong mã nguồn có đường dẫn lấy payload:
 
@@ -89,7 +80,7 @@ Trong mã nguồn có đường dẫn lấy payload:
 const VAULT_GATE = '/app/boss/gate';
 ```
 
-![Mã JavaScript trong bundle](writeup-track5-images/bai3-bundle.png)
+![Chú thích mô tả quy trình giải mã](writeup-track5-images/bai3-quy-trinh.png)
 
 Các chú thích cũng mô tả quy trình mã hóa:
 
@@ -103,17 +94,15 @@ Do đó, quy trình giải mã là:
 hex → chuyển thành byte → XOR với khóa lặp → giải mã Base64 → đảo ngược byte
 ```
 
-![Chú thích mô tả quy trình giải mã](writeup-track5-images/bai3-quy-trinh.png)
-
 ### Bước 2: Lấy payload đã mã hóa
+
+![Payload dạng hex tại gate](writeup-track5-images/bai3-payload.png)
 
 Truy cập `/app/boss/gate`, thu được payload dạng hex:
 
 ```text
 536c57492872615d7d6664573d0b2f526c510403286206026201772936065805
 ```
-
-![Payload dạng hex tại gate](writeup-track5-images/bai3-payload.png)
 
 ### Bước 3: Khôi phục khóa XOR từ self-test
 
@@ -146,8 +135,6 @@ Chuỗi này cho thấy phần đầu được lặp lại. Lấy khóa ứng vi
 ```text
 5843e575011ddae8
 ```
-
-**Lưu ý:** Khóa được sử dụng dưới dạng **16 byte ASCII của chuỗi trên**, không phải 8 byte thu được bằng cách giải mã chuỗi đó từ hex. Việc áp dụng khóa này tái tạo đúng toàn bộ bản mã self-test và giải mã được payload bên dưới.
 
 ### Bước 4: XOR payload với khóa lặp
 
@@ -183,19 +170,4 @@ FLAG{m14-bc2b7e1ae037}
 
 ![Flag bài 3 sau khi đảo ngược byte](writeup-track5-images/bai3-flag.png)
 
-### Nguyên nhân
 
-Mã phía trình duyệt để lộ quy trình xử lý cùng một cặp bản rõ–bản mã của tầng XOR. Vì khóa XOR được dùng lặp lại, cặp dữ liệu này cho phép khôi phục phần khóa cần thiết và giải mã payload.
-
-## Kết quả
-
-| Bài | Flag |
-| --- | --- |
-| Bài 2 — Leo thang đặc quyền | `FLAG{m10-926822c17962}` |
-| Bài 3 — Két sắt APT | `FLAG{m14-bc2b7e1ae037}` |
-
-## Phạm vi kiểm chứng
-
-- Đã đối chiếu phần chữ và ảnh minh họa trong tài liệu gốc.
-- Đã kiểm tra lại phép XOR của self-test và toàn bộ chuỗi giải mã bài 3 bằng dữ liệu trích từ tài liệu; kết quả khớp flag trong ảnh.
-- Chưa truy cập website hoặc thực thi các lệnh khai thác của bài 2. Kết quả bài 2 được ghi nhận theo ảnh trong tài liệu gốc.
