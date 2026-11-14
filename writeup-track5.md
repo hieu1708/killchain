@@ -40,21 +40,21 @@ Cấu hình này cho phép `www-data` chạy `/usr/bin/python3` với quyền `r
 
 ### Bước 3: Đọc flag
 
-Tài liệu gốc ghi nhận lệnh sau và ảnh chụp kết quả trả về flag:
+Nhập lệnh:
 
 ```bash
 sudo python3 cat /root/flag
 ```
 
-**Lưu ý:** thực ra câu lệnh trên chưa đúng cú pháp nhưng lab vẫn xử lý lệnh
+**Lưu ý:** thực ra câu lệnh trên chưa đúng cú pháp nhưng ko hiểu sao lab vẫn xử lý lệnh :))'
 
-Flag hiển thị trong ảnh:
+lệnh chuẩn phải là sudo python3 -c 'print(open("/root/flag").read())'
 
+
+![Flag bài 2 trong tài liệu gốc](writeup-track5-images/bai2-flag.png)
 ```text
 FLAG{m10-926822c17962}
 ```
-
-![Flag bài 2 trong tài liệu gốc](writeup-track5-images/bai2-flag.png)
 
 ### Nguyên nhân
 
